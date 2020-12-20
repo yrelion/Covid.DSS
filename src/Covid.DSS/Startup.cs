@@ -27,11 +27,29 @@ namespace Covid.DSS
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
+            services.AddDbContext<IdentityContext>(options =>
+                options.UseMySql(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<IdentityContext>();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                options.Lockout.MaxFailedAccessAttempts = 10;
+
+                // User settings
+                options.User.RequireUniqueEmail = true;
+            });
+
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

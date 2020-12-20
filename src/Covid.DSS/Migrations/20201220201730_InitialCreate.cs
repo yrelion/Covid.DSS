@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Covid.DSS.Data.Migrations
+namespace Covid.DSS.Migrations
 {
-    public partial class CreateIdentitySchema : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,9 +12,9 @@ namespace Covid.DSS.Data.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(maxLength: 256, nullable: true),
+                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    Name = table.Column<string>(maxLength: 128, nullable: true),
+                    NormalizedName = table.Column<string>(maxLength: 128, nullable: true),
                     ConcurrencyStamp = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -26,11 +26,11 @@ namespace Covid.DSS.Data.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(nullable: false),
-                    UserName = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
-                    Email = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
+                    Id = table.Column<string>(maxLength: 36, nullable: false),
+                    UserName = table.Column<string>(maxLength: 128, nullable: true),
+                    NormalizedUserName = table.Column<string>(maxLength: 128, nullable: true),
+                    Email = table.Column<string>(maxLength: 255, nullable: true),
+                    NormalizedEmail = table.Column<string>(maxLength: 255, nullable: true),
                     EmailConfirmed = table.Column<bool>(nullable: false),
                     PasswordHash = table.Column<string>(nullable: true),
                     SecurityStamp = table.Column<string>(nullable: true),
@@ -52,7 +52,7 @@ namespace Covid.DSS.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     RoleId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -73,7 +73,7 @@ namespace Covid.DSS.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -96,7 +96,7 @@ namespace Covid.DSS.Data.Migrations
                     LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
                     ProviderKey = table.Column<string>(maxLength: 128, nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
-                    UserId = table.Column<string>(nullable: false)
+                    UserId = table.Column<string>(maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -113,8 +113,8 @@ namespace Covid.DSS.Data.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(nullable: false),
-                    RoleId = table.Column<string>(nullable: false)
+                    UserId = table.Column<string>(maxLength: 36, nullable: false),
+                    RoleId = table.Column<string>(maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -137,7 +137,7 @@ namespace Covid.DSS.Data.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(nullable: false),
+                    UserId = table.Column<string>(maxLength: 36, nullable: false),
                     LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
                     Name = table.Column<string>(maxLength: 128, nullable: false),
                     Value = table.Column<string>(nullable: true)
@@ -162,8 +162,7 @@ namespace Covid.DSS.Data.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true,
-                filter: "[NormalizedName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -189,8 +188,7 @@ namespace Covid.DSS.Data.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
