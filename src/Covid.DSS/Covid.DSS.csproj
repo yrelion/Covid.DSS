@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Covid.DSS.Common\Covid.DSS.Common.csproj" />
+    <ProjectReference Include="..\Covid.DSS.Core\Covid.DSS.Core.csproj" />
   </ItemGroup>
 
 </Project>
