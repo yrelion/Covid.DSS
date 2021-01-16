@@ -55,6 +55,8 @@ namespace Covid.DSS
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            DapperConfig.Initialize();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
