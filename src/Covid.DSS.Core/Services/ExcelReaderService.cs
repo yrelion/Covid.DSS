@@ -5,8 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Covid.DSS.Common.Configuration;
-using Covid.DSS.Common.Infrastructure;
+using System.Threading.Tasks;
 using Covid.DSS.Common.Models;
 using Covid.DSS.Common.Models.DTO;
 using Covid.DSS.Core.Services.Interfaces;
@@ -15,78 +14,16 @@ using ValueType = Covid.DSS.Common.Models.ValueType;
 
 namespace Covid.DSS.Core.Services
 {
-    public class ExcelReaderService : ServiceBase<MetricDatabaseSettings>, IExcelReaderService
+    public class ExcelReaderService : IExcelReaderService
     {
         private ExcelWorksheet _sheet;
         private HospitalTemplateSetup _setup;
 
         private readonly string[] _excludedMetrics = {"EFFECTIVEDATE", "UNITID"};
 
-        public ExcelReaderService(IMetricDatabaseContext context) : base(context)
+        public IEnumerable<HospitalMetric> ParseFile(byte[] file, int templateId, HospitalTemplateSetup setup)
         {
-
-        }
-
-        public void Import(byte[] file, int templateId)
-        {
-            var parsedMetrics = ParseFile(file, templateId);
-            var decoratedMetrics = DecorateMetrics(parsedMetrics);
-        }
-
-        public IEnumerable<HospitalMetric> ParseFile(byte[] file, int templateId)
-        {
-            //TODO: get data template setup
-            _setup = new HospitalTemplateSetup
-            {
-                Id = templateId,
-                Name = "Simple",
-                HeaderRows = 3,
-                MetricSetups = new List<HospitalTemplateMetricSetup>
-                {
-                    new HospitalTemplateMetricSetup
-                    {
-                        DataTemplateId = templateId,
-                        MetricTypeId = 1,
-                        Source = "C5:C27",
-                        SourceType = DataTemplateMetricSourceType.Range,
-                        MetricType = new HospitalMetricType
-                        {
-                            Id = 1,
-                            Code = "UNITID",
-                            Description = "Αριθμός Μονάδας",
-                            ValueType = ValueType.Number
-                        }
-                    },
-                    new HospitalTemplateMetricSetup
-                    {
-                        DataTemplateId = templateId,
-                        MetricTypeId = 5,
-                        Source = "B5",
-                        SourceType = DataTemplateMetricSourceType.Column,
-                        MetricType = new HospitalMetricType
-                        {
-                            Id = 5,
-                            Code = "EFFECTIVEDATE",
-                            Description = "Ημερομηνία",
-                            ValueType = ValueType.Text
-                        }
-                    },
-                    new HospitalTemplateMetricSetup
-                    {
-                        DataTemplateId = templateId,
-                        MetricTypeId = 5,
-                        Source = "I5:I27",
-                        SourceType = DataTemplateMetricSourceType.Range,
-                        MetricType = new HospitalMetricType
-                        {
-                            Id = 5,
-                            Code = "EMPTY-SEATS",
-                            Description = "Αριθμός κενών κλινών",
-                            ValueType = ValueType.Number
-                        }
-                    }
-                }
-            };
+            _setup = setup;
 
             // read excel
             var package = CreatePackageFromFile(file);
@@ -94,12 +31,9 @@ namespace Covid.DSS.Core.Services
 
             var startingRow = _setup.HeaderRows + 1;
 
-
-            // validate file KEY
-
+            //TODO: validate file KEY
 
             // iterate through metric setups and read cells
-
             var metricValuesList = new Dictionary<string, IEnumerable<string>>();
             var metrics = new List<HospitalMetric>();
 
@@ -136,10 +70,7 @@ namespace Covid.DSS.Core.Services
                         UnitId = unitId,
                         TypeId = metricSetup.MetricTypeId,
                         Value = metricValue,
-                        Status = MetricStatusType.Active,
-                        Type = MetricType.Draft,
                         EffectiveDate = effectiveDate,
-                        InsertDate = DateTime.Now,
                     };
 
                     metrics.Add(metric);
@@ -197,16 +128,6 @@ namespace Covid.DSS.Core.Services
             }
 
             return result;
-        }
-
-        private IEnumerable<HospitalMetric> DecorateMetrics(IEnumerable<HospitalMetric> metrics)
-        {
-            return metrics; //TODO: Decorate remaining properties
-        }
-
-        public void CreateMetrics(IEnumerable<HospitalMetric> metrics)
-        {
-            
         }
     }
 }

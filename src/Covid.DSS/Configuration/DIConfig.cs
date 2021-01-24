@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Covid.DSS.Common.Configuration;
 using Covid.DSS.Common.Infrastructure;
+using Covid.DSS.Common.Models;
 using Covid.DSS.Core.Configuration;
 using Covid.DSS.DapperWrapper.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -30,6 +33,10 @@ namespace Covid.DSS.Configuration
 
             // Custom Services
             services.AddMetricServices();
+
+            // Miscellaneous
+            services.AddScoped(s => s.GetService<IHttpContextAccessor>().HttpContext.User);
+            services.AddScoped<UserIdentityContext>();
         }
     }
 }

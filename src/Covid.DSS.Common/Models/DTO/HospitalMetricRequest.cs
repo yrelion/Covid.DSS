@@ -8,7 +8,9 @@ namespace Covid.DSS.Common.Models.DTO
     {
         public int Id { get; set; }
         public int DataTemplateId { get; set; }
-        public Guid UserId { get; set; }
+
+        public string UserId { get; set; }
+
         public DateTime InsertDate { get; set; }
         public MetricRequestStatusType Status { get; set; }
     }

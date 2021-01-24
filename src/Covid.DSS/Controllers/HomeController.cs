@@ -9,19 +9,23 @@ using Covid.DSS.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Covid.DSS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 namespace Covid.DSS.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IExcelReaderService _excelReaderService;
+        private readonly IMetricService _metricService;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, IExcelReaderService excelReaderService)
+        public HomeController(ILogger<HomeController> logger, IMetricService metricService, UserManager<IdentityUser> userManager)
         {
             _logger = logger;
-            _excelReaderService = excelReaderService;
+            _metricService = metricService;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -40,11 +44,11 @@ namespace Covid.DSS.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        [HttpPost]
+        [HttpPost, Authorize]
         [AllowedFileExtensions(".xlsx")]
-        public IActionResult ImportRequest(IFormFile file, [FromForm] int templateId)
+        public async Task<IActionResult> ImportRequest(IFormFile file, [FromForm] int templateId)
         {
-            _excelReaderService.Import(file.ToByteArray(), templateId);
+            await _metricService.Import(file.ToByteArray(), templateId);
             return Ok();
         }
     }
