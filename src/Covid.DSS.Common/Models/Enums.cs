@@ -40,6 +40,7 @@ namespace Covid.DSS.Common.Models
     {
         Column,
         Cell,
+        Range,
         Field
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Covid.DSS.Common.Configuration;
 using Covid.DSS.Common.Infrastructure;
+using Covid.DSS.Core.Configuration;
 using Covid.DSS.DapperWrapper.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,9 @@ namespace Covid.DSS.Configuration
 
             // Database Contexts
             services.AddScoped<IMetricDatabaseContext, MetricDbContext>();
+
+            // Custom Services
+            services.AddMetricServices();
         }
     }
 }

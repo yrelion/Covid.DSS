@@ -17,6 +17,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Covid.DSS.Common", "src\Cov
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Covid.DSS.Core", "src\Covid.DSS.Core\Covid.DSS.Core.csproj", "{D8D1A1FD-0645-4323-9468-C33664B4D197}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{6E611C53-3959-4CC3-A52C-96A090F062DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resource.Internal", "src\Resources\Resource.Internal\Resource.Internal.csproj", "{04F68E80-4D66-4E7F-95AC-2F5F097AB119}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,10 @@ Global
 		{D8D1A1FD-0645-4323-9468-C33664B4D197}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8D1A1FD-0645-4323-9468-C33664B4D197}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8D1A1FD-0645-4323-9468-C33664B4D197}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04F68E80-4D66-4E7F-95AC-2F5F097AB119}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04F68E80-4D66-4E7F-95AC-2F5F097AB119}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04F68E80-4D66-4E7F-95AC-2F5F097AB119}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04F68E80-4D66-4E7F-95AC-2F5F097AB119}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,8 +56,11 @@ Global
 		{AD2D426D-7766-493D-9C34-B101AD2AB9E5} = {E715609B-0DC6-47AB-AAB0-5A6CD86FF013}
 		{B02DFDA0-C69E-4124-823F-F3DB4E2C365E} = {E715609B-0DC6-47AB-AAB0-5A6CD86FF013}
 		{D8D1A1FD-0645-4323-9468-C33664B4D197} = {E715609B-0DC6-47AB-AAB0-5A6CD86FF013}
+		{6E611C53-3959-4CC3-A52C-96A090F062DD} = {E715609B-0DC6-47AB-AAB0-5A6CD86FF013}
+		{04F68E80-4D66-4E7F-95AC-2F5F097AB119} = {6E611C53-3959-4CC3-A52C-96A090F062DD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
+		RESX_NeutralResourcesLanguage = el-GR
 		SolutionGuid = {2C04FE4C-F721-47EA-B2C2-149D792BC675}
 	EndGlobalSection
 EndGlobal
