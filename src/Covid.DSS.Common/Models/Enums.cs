@@ -38,7 +38,6 @@ namespace Covid.DSS.Common.Models
 
     public enum DataTemplateMetricSourceType
     {
-        Column,
         Cell,
         Range,
         Field

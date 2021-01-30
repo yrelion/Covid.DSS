@@ -22,8 +22,10 @@ namespace Covid.DSS.Configuration
             // Application Settings
             services.Configure<MySqlSettings>(configuration.GetSection(MySqlSettings.Name));
             services.Configure<MetricDatabaseSettings>(configuration.GetSection(MetricDatabaseSettings.Name));
+            services.Configure<ExcelSettings>(configuration.GetSection(ExcelSettings.Name));
             services.AddSingleton(x => x.GetService<IOptions<MySqlSettings>>()?.Value);
             services.AddSingleton(x => x.GetService<IOptions<MetricDatabaseSettings>>()?.Value);
+            services.AddSingleton(x => x.GetService<IOptions<ExcelSettings>>()?.Value);
 
             // Per Context Connection Factories
             services.AddSingleton<IConnectionFactory<MetricDatabaseSettings>, ConnectionFactory<MetricDatabaseSettings>>();

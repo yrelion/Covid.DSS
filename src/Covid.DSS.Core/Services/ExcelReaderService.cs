@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Covid.DSS.Common.Configuration;
 using Covid.DSS.Common.Models;
 using Covid.DSS.Common.Models.DTO;
 using Covid.DSS.Core.Services.Interfaces;
@@ -18,15 +19,19 @@ namespace Covid.DSS.Core.Services
         private ExcelWorksheet _sheet;
         private HospitalTemplateSetup _setup;
 
-        private const string _documentSignature = "AAABBBCCC"; //TODO: Retrieve from app settings
-
-        private const string _effectiveDateCode = "EFFECTIVEDATE";
-        private const string _unitIdCode = "UNITID";
-        private const string _signatureCode = "DOCSIGNATURE";
-
-        private readonly string[] _excludedMetrics = { _effectiveDateCode, _unitIdCode, _signatureCode };
+        private readonly ExcelSettings _excelSettings;
+        
+        protected const string EffectiveDateCode = "EFFECTIVEDATE";
+        protected const string UnitIdCode = "UNITID";
+        protected const string SignatureCode = "DOCSIGNATURE";
+        protected readonly string[] _excludedMetrics = { EffectiveDateCode, UnitIdCode, SignatureCode };
 
         protected readonly string Culture = "el-GR";
+
+        public ExcelReaderService(ExcelSettings excelSettings)
+        {
+            _excelSettings = excelSettings;
+        }
 
         /// <summary>
         /// Parses a excel file given a set of setup instructions into a collection
@@ -53,10 +58,10 @@ namespace Covid.DSS.Core.Services
                 metricValuesList.Add(metricSetup.MetricType.Code, metricValues);
             }
 
-            DateTime.TryParse(metricValuesList[_effectiveDateCode].FirstOrDefault(), new CultureInfo(Culture),
+            DateTime.TryParse(metricValuesList[EffectiveDateCode].FirstOrDefault(), new CultureInfo(Culture),
                 DateTimeStyles.None, out var effectiveDate);
-            var unitIdList = metricValuesList[_unitIdCode].ToList();
-            var signature = metricValuesList[_signatureCode].FirstOrDefault();
+            var unitIdList = metricValuesList[UnitIdCode].ToList();
+            var signature = metricValuesList[SignatureCode].FirstOrDefault();
 
             if (!IsSignatureValid(signature))
                 return null;
@@ -141,8 +146,6 @@ namespace Covid.DSS.Core.Services
 
             switch (metricSetup.SourceType)
             {
-                case DataTemplateMetricSourceType.Column:
-                    break; //TODO: Review for removal of Column type
                 case DataTemplateMetricSourceType.Cell:
                     result.Add(_sheet.Cells[metricSetup.Source].GetValue<string>());
                     break;
@@ -172,7 +175,7 @@ namespace Covid.DSS.Core.Services
         /// Checks whether the claimed signature string matches the accepted signature
         /// </summary>
         /// <param name="claimedSignature">The signature to verify</param>
-        private static bool IsSignatureValid(string claimedSignature)
-            => claimedSignature == _documentSignature;
+        private bool IsSignatureValid(string claimedSignature)
+            => claimedSignature == _excelSettings.Signature;
     }
 }
