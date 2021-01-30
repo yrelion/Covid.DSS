@@ -19,9 +19,14 @@ namespace Covid.DSS.Core.Repositories
 
         public HospitalMetricRepository(IMetricDatabaseContext databaseContext) : base(databaseContext) { }
 
-        public async Task<IEnumerable<HospitalMetric>> GetMetrics(ListOptions options = null)
+        public async Task<ResultSet<HospitalMetric>> GetMetrics(ListOptions<HospitalMetricFilter> options = null)
         {
-            return await QueryAsync<HospitalMetric>(Resources.Queries.Select_AllRecords.FormatWith(Table), options: options);
+            var sql = Resources.Queries.Select_AllRecords.FormatWith(Table);
+            var parameters = new DynamicParameters();
+
+            AddHospitalMetricFiltersToQuery(ref sql, ref parameters, options.Filter);
+
+            return await QueryResultSetAsync<HospitalMetric>(sql, parameters, options: options);
         }
 
         public async Task<HospitalMetric> GetMetric(int id)
@@ -59,6 +64,46 @@ namespace Covid.DSS.Core.Repositories
             var metricId = parameters.Get<int>("ID");
 
             return await GetMetric(metricId);
+        }
+
+        private string ClauseVariant(ref string sql)
+        {
+            var whereClauseLiteral = " WHERE ";
+            var andLiteral = " AND ";
+
+            var containsWhereClause = sql.Contains(whereClauseLiteral);
+
+            return !containsWhereClause ? whereClauseLiteral : andLiteral;
+        }
+
+        private void AddHospitalMetricFiltersToQuery(ref string sql, ref DynamicParameters parameters, HospitalMetricFilter filter)
+        {
+            if (!filter.HasAnyValue())
+                return;
+
+            if (filter.RegionId != default(int))
+            {
+                sql += $"{ClauseVariant(ref sql)}hospital_unit_region_id = @REGIONID";
+                parameters.Add("@REGIONID", filter.RegionId, DbType.Int32, ParameterDirection.Input);
+            }
+
+            if (filter.UnitId != default(int))
+            {
+                sql += $"{ClauseVariant(ref sql)}hospital_unit_id = @UNITID";
+                parameters.Add("@UNITID", filter.UnitId, DbType.Int32, ParameterDirection.Input);
+            }
+
+            if (filter.TypeId != default(int))
+            {
+                sql += $"{ClauseVariant(ref sql)}metric_type_id = @TYPEID";
+                parameters.Add("@TYPEID", filter.TypeId, DbType.Int32, ParameterDirection.Input);
+            }
+
+            if (filter.EffectiveDate != null)
+            {
+                sql += $"{ClauseVariant(ref sql)}effective_date = @EFFECTIVEDATE";
+                parameters.Add("@EFFECTIVEDATE", filter.EffectiveDate, DbType.Date, ParameterDirection.Input);
+            }
         }
     }
 }

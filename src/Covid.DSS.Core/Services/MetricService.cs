@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Covid.DSS.Common.Configuration;
@@ -9,6 +10,7 @@ using Covid.DSS.Common.Models;
 using Covid.DSS.Common.Models.DTO;
 using Covid.DSS.Core.Repositories.Interfaces;
 using Covid.DSS.Core.Services.Interfaces;
+using Indice.Types;
 
 namespace Covid.DSS.Core.Services
 {
@@ -32,6 +34,33 @@ namespace Covid.DSS.Core.Services
             _metricRequestRepository = metricRequestRepository;
             _metricRepository = metricRepository;
             _userIdentityContext = userIdentityContext;
+        }
+
+        public async Task<ResultSet<HospitalMetric>> GetMetrics(ListOptions<HospitalMetricFilter> options)
+        {
+            return await _metricRepository.GetMetrics(options);
+        }
+
+        private async Task<IEnumerable<HospitalMetric>> DecorateMetrics(int requestId, IEnumerable<HospitalMetric> metrics)
+        {
+            var hospitalUnits = await _hospitalUnitRepository.GetHospitalUnits();
+
+            foreach (var metric in metrics)
+            {
+                var matchingHospital = hospitalUnits.FirstOrDefault(x => x.Id == metric.UnitId);
+                metric.RequestId = requestId;
+                metric.RegionId = matchingHospital?.Region ?? 0;
+                metric.Status = MetricStatusType.Active;
+                metric.Type = MetricType.Draft;
+                metric.InsertDate = DateTime.Now;
+            }
+
+            return metrics;
+        }
+
+        public async Task<IEnumerable<HospitalMetricType>> GetMetricTypes()
+        {
+            return await _dataTemplateRepository.GetMetricTypes();
         }
 
         public async Task Import(byte[] file, int templateId)
@@ -121,28 +150,6 @@ namespace Covid.DSS.Core.Services
             }
 
             return result;
-        }
-
-        public async Task<IEnumerable<HospitalMetricType>> GetMetricTypes()
-        {
-            return await _dataTemplateRepository.GetMetricTypes();
-        }
-
-        private async Task<IEnumerable<HospitalMetric>> DecorateMetrics(int requestId, IEnumerable<HospitalMetric> metrics)
-        {
-            var hospitalUnits = await _hospitalUnitRepository.GetHospitalUnits();
-
-            foreach (var metric in metrics)
-            {
-                var matchingHospital = hospitalUnits.FirstOrDefault(x => x.Id == metric.UnitId);
-                metric.RequestId = requestId;
-                metric.RegionId = matchingHospital?.Region ?? 0;
-                metric.Status = MetricStatusType.Active;
-                metric.Type = MetricType.Draft;
-                metric.InsertDate = DateTime.Now;
-            }
-
-            return metrics;
         }
     }
 }
