@@ -104,5 +104,23 @@ namespace Covid.DSS.Core.Resources {
                 return ResourceManager.GetString("Select_Metric_ByRequestId", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UPDATE {0} SET status = @STATUS WHERE id = @ID.
+        /// </summary>
+        internal static string Update_MetricRequest {
+            get {
+                return ResourceManager.GetString("Update_MetricRequest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UPDATE {0} SET type = @TYPE, update_user = @UPDATEUSER WHERE hospital_metrics_request_id = @REQUESTID.
+        /// </summary>
+        internal static string Update_MetricType {
+            get {
+                return ResourceManager.GetString("Update_MetricType", resourceCulture);
+            }
+        }
     }
 }

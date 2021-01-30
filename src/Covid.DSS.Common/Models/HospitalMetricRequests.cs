@@ -15,4 +15,14 @@ namespace Covid.DSS.Common.Models
         public MetricType Type { get; set; }
         public DateTime EffectiveDate { get; set; }
     }
+
+    public abstract class HospitalMetricUpdateRequest
+    {
+        public string UpdateUserId { get; set; }
+    }
+
+    public class HospitalMetricUpdateTypeRequest : HospitalMetricUpdateRequest
+    {
+        public MetricType Type { get; set; }
+    }
 }

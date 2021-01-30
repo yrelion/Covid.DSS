@@ -17,7 +17,7 @@ namespace Covid.DSS.Core.Repositories.Mappings
             Map(x => x.EffectiveDate).ToColumn("effective_date");
             Map(x => x.InsertDate).ToColumn("insert_date");
             Map(x => x.UpdateDate).ToColumn("update_date");
-            Map(x => x.UpdateUser).ToColumn("update_uer");
+            Map(x => x.UpdateUser).ToColumn("update_user");
         }
     }
 }

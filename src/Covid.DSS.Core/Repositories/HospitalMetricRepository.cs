@@ -38,9 +38,13 @@ namespace Covid.DSS.Core.Repositories
                 });
         }
 
-        public async Task<IEnumerable<HospitalMetric>> GetMetricsByRequestId(ListOptions options = null)
+        public async Task<IEnumerable<HospitalMetric>> GetMetricsByRequestId(int requestId, ListOptions options = null)
         {
-            return await QueryAsync<HospitalMetric>(Resources.Queries.Select_Metric_ByRequestId.FormatWith(Table), options: options);
+            return await QueryAsync<HospitalMetric>(Resources.Queries.Select_Metric_ByRequestId.FormatWith(Table), new DynamicParameters(),
+                (parameters, listOptions) =>
+                {
+                    parameters.Add("@REQUESTID", requestId, DbType.Int32, ParameterDirection.Input);
+                }, options);
         }
 
         public async Task<HospitalMetric> CreateMetric(HospitalMetricCreateRequest request)
@@ -64,6 +68,18 @@ namespace Covid.DSS.Core.Repositories
             var metricId = parameters.Get<int>("ID");
 
             return await GetMetric(metricId);
+        }
+
+        public async Task<IEnumerable<HospitalMetric>> UpdateMetricsTypeByRequestId(int requestId, HospitalMetricUpdateTypeRequest request)
+        {
+            var executionResult = await ExecuteAsync(Resources.Queries.Update_MetricType.FormatWith(Table), new DynamicParameters(), parameters =>
+            {
+                parameters.Add("@REQUESTID", requestId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@TYPE", request.Type.ToString(), DbType.String, ParameterDirection.Input);
+                parameters.Add("@UPDATEUSER", request.UpdateUserId, DbType.String, ParameterDirection.Input);
+            });
+            
+            return await GetMetricsByRequestId(requestId);
         }
 
         private string ClauseVariant(ref string sql)

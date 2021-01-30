@@ -24,7 +24,7 @@ namespace Covid.DSS.Core.Services
         protected const string EffectiveDateCode = "EFFECTIVEDATE";
         protected const string UnitIdCode = "UNITID";
         protected const string SignatureCode = "DOCSIGNATURE";
-        protected readonly string[] _excludedMetrics = { EffectiveDateCode, UnitIdCode, SignatureCode };
+        protected readonly string[] ExcludedMetrics = { EffectiveDateCode, UnitIdCode, SignatureCode };
 
         protected readonly string Culture = "el-GR";
 
@@ -68,7 +68,7 @@ namespace Covid.DSS.Core.Services
 
             foreach (var list in metricValuesList)
             {
-                if(_excludedMetrics.Contains(list.Key))
+                if(ExcludedMetrics.Contains(list.Key))
                     continue;
 
                 var index = 0;

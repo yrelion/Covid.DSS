@@ -50,5 +50,19 @@ namespace Covid.DSS.Core.Repositories
 
             return await GetRequest(requestId);
         }
+
+        public async Task<HospitalMetricRequest> UpdateRequest(int id, HospitalMetricRequestUpdateRequest request)
+        {
+            var executionResult = await ExecuteSingleAsync(Resources.Queries.Update_MetricRequest.FormatWith(Table), new DynamicParameters(), parameters =>
+            {
+                parameters.Add("@ID", id, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@STATUS", request.Status.ToString(), DbType.String, ParameterDirection.Input);
+            });
+
+            if(executionResult.RowsAffected != 1)
+                throw new IncompleteDatabaseOperationException();
+
+            return await GetRequest(id);
+        }
     }
 }

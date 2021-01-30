@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Covid.DSS.Common.Configuration;
@@ -63,8 +62,10 @@ namespace Covid.DSS.Core.Services
             return await _dataTemplateRepository.GetMetricTypes();
         }
 
-        public async Task Import(byte[] file, int templateId)
+        public async Task<HospitalMetricRequestContext> CreateImportRequest(byte[] file, int templateId)
         {
+            var result = new HospitalMetricRequestContext();
+
             DatabaseContext.BeginTransaction();
 
             var metricRequestCreateRequest = await _metricRequestRepository.CreateRequest(templateId, new HospitalMetricRequestCreateRequest
@@ -79,10 +80,14 @@ namespace Covid.DSS.Core.Services
                 throw new TransactionFailureException();
             }
 
+            result.Request = metricRequestCreateRequest;
+
             var setup = await GetTemplateSetup(templateId);
 
             var parsedMetrics = _excelReaderService.ParseFile(file, setup);
             var decoratedMetrics = await DecorateMetrics(metricRequestCreateRequest.Id, parsedMetrics);
+
+            var createdMetrics = new List<HospitalMetric>();
 
             foreach (var decoratedMetric in decoratedMetrics)
             {
@@ -97,9 +102,72 @@ namespace Covid.DSS.Core.Services
                     Type = decoratedMetric.Type,
                     EffectiveDate = decoratedMetric.EffectiveDate
                 });
+
+                createdMetrics.Add(createdMetric);
             }
 
             DatabaseContext.TryCommitTransaction();
+
+            result.Metrics = createdMetrics;
+            
+            return result;
+        }
+
+        public async Task<HospitalMetricRequestContext> GetImportRequestContext(int requestId)
+        {
+            var result = new HospitalMetricRequestContext
+            {
+                Request = await _metricRequestRepository.GetRequest(requestId),
+                Metrics = await _metricRepository.GetMetricsByRequestId(requestId)
+            };
+
+            return result;
+        }
+
+        public async Task<HospitalMetricRequestContext> ApproveImportRequest(int requestId)
+        {
+            var requestUpdateRequest = new HospitalMetricRequestUpdateRequest
+            {
+                Status = MetricRequestStatusType.Accepted
+            };
+
+            var metricTypeUpdateRequest = new HospitalMetricUpdateTypeRequest
+            {
+                UpdateUserId = _userIdentityContext.GetUserId(),
+                Type = MetricType.Final
+            };
+
+            DatabaseContext.BeginTransaction();
+
+            var updatedRequest = await _metricRequestRepository.UpdateRequest(requestId, requestUpdateRequest);
+            var updatedMetrics = await _metricRepository.UpdateMetricsTypeByRequestId(requestId, metricTypeUpdateRequest);
+            
+            DatabaseContext.TryCommitTransaction();
+
+            return await GetImportRequestContext(requestId);
+        }
+
+        public async Task<HospitalMetricRequestContext> RejectImportRequest(int requestId)
+        {
+            var request = new HospitalMetricRequestUpdateRequest
+            {
+                Status = MetricRequestStatusType.Rejected
+            };
+
+            var metricTypeUpdateRequest = new HospitalMetricUpdateTypeRequest
+            {
+                UpdateUserId = _userIdentityContext.GetUserId(),
+                Type = MetricType.Draft
+            };
+
+            DatabaseContext.BeginTransaction();
+
+            var updatedRequest = await _metricRequestRepository.UpdateRequest(requestId, request);
+            var updatedMetrics = await _metricRepository.UpdateMetricsTypeByRequestId(requestId, metricTypeUpdateRequest);
+
+            DatabaseContext.TryCommitTransaction();
+
+            return await GetImportRequestContext(requestId);
         }
 
         public async Task<HospitalTemplateSetup> GetTemplateSetup(int templateId)

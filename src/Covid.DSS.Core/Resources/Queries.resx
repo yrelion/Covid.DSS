@@ -117,4 +117,12 @@
     <value>SELECT * FROM {0} WHERE hospital_metrics_request_id = @REQUESTID</value>
     <comment>@invariant</comment>
   </data>
+  <data name="Update_MetricRequest" xml:space="preserve">
+    <value>UPDATE {0} SET status = @STATUS WHERE id = @ID</value>
+    <comment>@invariant</comment>
+  </data>
+  <data name="Update_MetricType" xml:space="preserve">
+    <value>UPDATE {0} SET type = @TYPE, update_user = @UPDATEUSER WHERE hospital_metrics_request_id = @REQUESTID</value>
+    <comment>@invariant</comment>
+  </data>
 </root>

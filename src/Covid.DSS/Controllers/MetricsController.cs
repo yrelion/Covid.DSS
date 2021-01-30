@@ -49,13 +49,49 @@ namespace Covid.DSS.Controllers
         /// </summary>
         /// <param name="file">The file to import</param>
         /// <param name="templateId">The template identifier to parse the file with</param>
-        [HttpPost("import")]
+        [HttpPost("requests")]
         [AllowedFileExtensions(".xlsx")]
         [Authorize(Policies.Metrics.Clearance.Elevated)]
-        public async Task<IActionResult> ImportRequest(IFormFile file, [FromForm] int templateId)
+        public async Task<IActionResult> CreateImportRequest(IFormFile file, [FromForm] int templateId)
         {
-            await _metricService.Import(file.ToByteArray(), templateId);
-            return Ok();
+            var result = await _metricService.CreateImportRequest(file.ToByteArray(), templateId);
+            return CreatedAtAction(nameof(GetImportRequest),new {id = result?.Request.Id} ,result);
+        }
+
+        /// <summary>
+        /// Get an import request
+        /// </summary>
+        /// <param name="id">The request identifier</param>
+        [HttpGet("requests/{id}")]
+        [Authorize(Policies.Metrics.Clearance.Elevated)]
+        public async Task<IActionResult> GetImportRequest(int id)
+        {
+            var result = await _metricService.GetImportRequestContext(id);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Approves an import request
+        /// </summary>
+        /// <param name="id">The request identifier</param>
+        [HttpPatch("requests/{id}/approve")]
+        [Authorize(Policies.Metrics.Clearance.Elevated)]
+        public async Task<IActionResult> ApproveImportRequest(int id)
+        {
+            var result = await _metricService.ApproveImportRequest(id);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Rejects an import request
+        /// </summary>
+        /// <param name="id">The request identifier</param>
+        [HttpPatch("requests/{id}/reject")]
+        [Authorize(Policies.Metrics.Clearance.Elevated)]
+        public async Task<IActionResult> RejectImportRequest(int id)
+        {
+            var result = await _metricService.RejectImportRequest(id);
+            return Ok(result);
         }
     }
 }

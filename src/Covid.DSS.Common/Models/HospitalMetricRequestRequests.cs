@@ -9,4 +9,9 @@ namespace Covid.DSS.Common.Models
         public string UserId { get; set; }
         public MetricRequestStatusType Status { get; set; }
     }
+
+    public class HospitalMetricRequestUpdateRequest
+    {
+        public MetricRequestStatusType Status { get; set; }
+    }
 }

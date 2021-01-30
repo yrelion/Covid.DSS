@@ -12,7 +12,10 @@ namespace Covid.DSS.Core.Services.Interfaces
     {
         Task<ResultSet<HospitalMetric>> GetMetrics(ListOptions<HospitalMetricFilter> options);
         Task<IEnumerable<HospitalMetricType>> GetMetricTypes();
-        Task Import(byte[] file, int templateId);
+        Task<HospitalMetricRequestContext> CreateImportRequest(byte[] file, int templateId);
+        Task<HospitalMetricRequestContext> GetImportRequestContext(int requestId);
+        Task<HospitalMetricRequestContext> ApproveImportRequest(int requestId);
+        Task<HospitalMetricRequestContext> RejectImportRequest(int requestId);
         Task<HospitalTemplateSetup> GetTemplateSetup(int templateId);
         Task<IEnumerable<HospitalTemplateMetricSetup>> GetTemplateMetricSetups(int templateId);
     }

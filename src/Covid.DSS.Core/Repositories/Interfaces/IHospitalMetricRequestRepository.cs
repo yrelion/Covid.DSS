@@ -13,5 +13,6 @@ namespace Covid.DSS.Core.Repositories.Interfaces
         Task<IEnumerable<HospitalMetricRequest>> GetRequests(ListOptions options = null);
         Task<HospitalMetricRequest> GetRequest(int id);
         Task<HospitalMetricRequest> CreateRequest(int templateId, HospitalMetricRequestCreateRequest request);
+        Task<HospitalMetricRequest> UpdateRequest(int id, HospitalMetricRequestUpdateRequest request);
     }
 }

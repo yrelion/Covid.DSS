@@ -6,40 +6,40 @@ namespace Covid.DSS.Common.Models
 {
     public enum ThresholdLevelType
     {
-        Low,
-        High,
-        Critical
+        Low = 0,
+        High = 5,
+        Critical = 10
     }
 
     public enum ValueType
     {
-        Number,
-        Text
+        Number = 0,
+        Text = 1
     }
 
     public enum MetricStatusType
     {
-        Active,
-        Inactive
+        Inactive = 0,
+        Active = 1
     }
 
     public enum MetricType
     {
-        Draft,
-        Final
+        Draft = 0,
+        Final = 1
     }
 
     public enum MetricRequestStatusType
     {
-        Pending,
-        Accepted,
-        Rejected
+        Pending = 0,
+        Accepted = 1,
+        Rejected = 2
     }
 
     public enum DataTemplateMetricSourceType
     {
-        Cell,
-        Range,
-        Field
+        Cell = 0,
+        Range = 1,
+        Field = 2
     }
 }
