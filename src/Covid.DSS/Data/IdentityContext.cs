@@ -55,19 +55,23 @@ namespace Covid.DSS.Data
 
         protected void Seed(ModelBuilder modelBuilder)
         {
+            var userRoleName = Security.Roles.User;
+            var adminRoleName = Security.Roles.Admin;
+            var supportRoleName = Security.Roles.Support;
+
             var defaultRoles = new List<IdentityRole>
             {
-                new IdentityRole("User")
+                new IdentityRole(userRoleName)
                 {
-                    NormalizedName = "USER"
+                    NormalizedName = userRoleName.ToUpperInvariant()
                 },
-                new IdentityRole("Admin")
+                new IdentityRole(adminRoleName)
                 {
-                    NormalizedName = "ADMIN"
+                    NormalizedName = adminRoleName.ToUpperInvariant()
                 },
-                new IdentityRole("Support")
+                new IdentityRole(supportRoleName)
                 {
-                    NormalizedName = "SUPPORT"
+                    NormalizedName = supportRoleName.ToUpperInvariant()
                 },
             };
 
@@ -121,17 +125,17 @@ namespace Covid.DSS.Data
                 new IdentityUserRole<string>
                 {
                     UserId = defaultUsers.FirstOrDefault(x => x.UserName == userEmail)?.Id,
-                    RoleId = defaultRoles.FirstOrDefault(x => x.Name == "User")?.Id
+                    RoleId = defaultRoles.FirstOrDefault(x => x.Name == userRoleName)?.Id
                 },
                 new IdentityUserRole<string>
                 {
                     UserId = defaultUsers.FirstOrDefault(x => x.UserName == adminEmail)?.Id,
-                    RoleId = defaultRoles.FirstOrDefault(x => x.Name == "Admin")?.Id
+                    RoleId = defaultRoles.FirstOrDefault(x => x.Name == adminRoleName)?.Id
                 },
                 new IdentityUserRole<string>
                 {
                     UserId = defaultUsers.FirstOrDefault(x => x.UserName == supportEmail)?.Id,
-                    RoleId = defaultRoles.FirstOrDefault(x => x.Name == "Support")?.Id
+                    RoleId = defaultRoles.FirstOrDefault(x => x.Name == supportRoleName)?.Id
                 }
             });
         }

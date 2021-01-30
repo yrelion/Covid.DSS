@@ -34,6 +34,7 @@ namespace Covid.DSS
                 .AddEntityFrameworkStores<IdentityContext>();
 
             services.AddCustomServices(Configuration);
+            services.ConfigureAuthorization(Configuration);
 
             services.Configure<IdentityOptions>(options =>
             {

@@ -7,6 +7,7 @@ using Covid.DSS.Common.Models;
 using Covid.DSS.Common.Models.DTO;
 using Covid.DSS.Common.Utilities;
 using Covid.DSS.Core.Services.Interfaces;
+using Covid.DSS.Security;
 using Indice.Types;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +18,7 @@ using Microsoft.Extensions.Logging;
 namespace Covid.DSS.Controllers
 {
     [Route("[controller]")]
+    [Authorize(Policies.Metrics.Clearance.Basic)]
     public class MetricsController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -35,7 +37,7 @@ namespace Covid.DSS.Controllers
         /// </summary>
         /// <param name="options">The <see cref="ListOptions"/> query string</param>
         /// <returns>A <see cref="ResultSet{T}"/> of <see cref="HospitalMetric"/></returns>
-        [HttpGet, Authorize]
+        [HttpGet]
         public async Task<IActionResult> GetMetrics(ListOptions<HospitalMetricFilter> options)
         {
             var result = await _metricService.GetMetrics(options);
@@ -47,8 +49,9 @@ namespace Covid.DSS.Controllers
         /// </summary>
         /// <param name="file">The file to import</param>
         /// <param name="templateId">The template identifier to parse the file with</param>
-        [HttpPost("import"), Authorize]
+        [HttpPost("import")]
         [AllowedFileExtensions(".xlsx")]
+        [Authorize(Policies.Metrics.Clearance.Elevated)]
         public async Task<IActionResult> ImportRequest(IFormFile file, [FromForm] int templateId)
         {
             await _metricService.Import(file.ToByteArray(), templateId);
