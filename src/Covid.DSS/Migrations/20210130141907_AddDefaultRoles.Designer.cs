@@ -3,14 +3,16 @@ using System;
 using Covid.DSS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Covid.DSS.Migrations
 {
     [DbContext(typeof(IdentityContext))]
-    partial class IdentityContextModelSnapshot : ModelSnapshot
+    [Migration("20210130141907_AddDefaultRoles")]
+    partial class AddDefaultRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,22 +48,22 @@ namespace Covid.DSS.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "882ea168-ea3c-4fe2-b592-7051219052ec",
-                            ConcurrencyStamp = "2c5ed60b-b543-4505-867b-b832586782e1",
+                            Id = "ca4ac8f6-463b-47be-b13c-470fbcdf9e8b",
+                            ConcurrencyStamp = "281a5d29-bd21-40a1-806f-396cf6c56fb7",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "1045ad76-9854-4f90-8a67-bb69f5993231",
-                            ConcurrencyStamp = "b01086ef-e1ea-42fd-8189-db04ddadad2e",
+                            Id = "ba49dd31-03b6-4b21-b2ce-5d5bb2343924",
+                            ConcurrencyStamp = "5f4d1b82-0fdb-4929-850f-fadc6f103ff5",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "be9c13ab-9a76-4ad8-860f-17f1b3a97bef",
-                            ConcurrencyStamp = "a6259ba9-7395-4369-9988-4f1fb44af495",
+                            Id = "990a13a8-2f90-440a-8380-ef31b51fbd9c",
+                            ConcurrencyStamp = "3e7c7443-1b41-491f-ab42-d9d7537f9700",
                             Name = "Support",
                             NormalizedName = "SUPPORT"
                         });
@@ -153,50 +155,6 @@ namespace Covid.DSS.Migrations
                         .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "7e3a93b2-e09e-4301-ae7b-31232c4ea50d",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "370cf240-866a-4ed0-95a6-9e512ecf121d",
-                            Email = "user@dss.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            PasswordHash = "AQAAAAEAACcQAAAAEEYGI5XG6oYmS2+ZzULEO8fxnMngzbmEmikdygcl6CPtXlkBmUNw5005w4TxKMANRA==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "e27cebef-40c8-412b-b5b3-eeb019d7cf3a",
-                            TwoFactorEnabled = false,
-                            UserName = "user@dss.com"
-                        },
-                        new
-                        {
-                            Id = "7087339c-9bfe-4f01-806b-3aa423e9a217",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "b5c47f4b-a2da-4fd4-bf45-941432604693",
-                            Email = "admin@dss.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            PasswordHash = "AQAAAAEAACcQAAAAEHYFA6V9CThmuZMFUMFLld/S6Dsf7IO1zzSBP5yF6CYXmmlyOWrcoI7qXUECOnW2eA==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "7587839b-6b58-45ef-9abd-ff8288266df0",
-                            TwoFactorEnabled = false,
-                            UserName = "admin@dss.com"
-                        },
-                        new
-                        {
-                            Id = "fd8af5a9-4838-4dea-bed0-6cf650c2d135",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "4dfe146f-3b3a-4b40-806d-8396a813b0f0",
-                            Email = "support@dss.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            PasswordHash = "AQAAAAEAACcQAAAAENkmVJynzocGsVisGUGiZV1u5r3/Obn59lrJswZbdPO0SOpIFmSJcgtz37Mw3iDn5Q==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "bb47b807-84f6-4c30-89e7-1d37be4f94ca",
-                            TwoFactorEnabled = false,
-                            UserName = "support@dss.com"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -262,23 +220,6 @@ namespace Covid.DSS.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "7e3a93b2-e09e-4301-ae7b-31232c4ea50d",
-                            RoleId = "882ea168-ea3c-4fe2-b592-7051219052ec"
-                        },
-                        new
-                        {
-                            UserId = "7087339c-9bfe-4f01-806b-3aa423e9a217",
-                            RoleId = "1045ad76-9854-4f90-8a67-bb69f5993231"
-                        },
-                        new
-                        {
-                            UserId = "fd8af5a9-4838-4dea-bed0-6cf650c2d135",
-                            RoleId = "be9c13ab-9a76-4ad8-860f-17f1b3a97bef"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>

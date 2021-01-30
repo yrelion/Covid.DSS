@@ -30,6 +30,7 @@ namespace Covid.DSS
                 options.UseMySql(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<IdentityContext>();
 
             services.AddCustomServices(Configuration);

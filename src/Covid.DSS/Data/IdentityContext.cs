@@ -16,6 +16,8 @@ namespace Covid.DSS.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            Seed(modelBuilder);
+
             // Shorten key length for Identity
             modelBuilder.Entity<IdentityUser>(entity =>
             {
@@ -49,6 +51,89 @@ namespace Covid.DSS.Data
                 entity.Property(m => m.Name).HasMaxLength(128);
 
             });
+        }
+
+        protected void Seed(ModelBuilder modelBuilder)
+        {
+            var defaultRoles = new List<IdentityRole>
+            {
+                new IdentityRole("User")
+                {
+                    NormalizedName = "USER"
+                },
+                new IdentityRole("Admin")
+                {
+                    NormalizedName = "ADMIN"
+                },
+                new IdentityRole("Support")
+                {
+                    NormalizedName = "SUPPORT"
+                },
+            };
+
+            foreach (var identityRole in defaultRoles)
+            {
+                modelBuilder.Entity<IdentityRole>().HasData(identityRole);
+            }
+
+            var userEmail = "user@dss.com";
+            var adminEmail = "admin@dss.com";
+            var supportEmail = "support@dss.com";
+
+            var defaultPassword = "1234abcd!";
+
+            var defaultUsers = new List<IdentityUser>
+            {
+                new IdentityUser(userEmail)
+                {
+                    Email = userEmail,
+                    EmailConfirmed = true,
+                    LockoutEnabled = false
+                },
+                new IdentityUser(adminEmail)
+                {
+                    Email = adminEmail,
+                    EmailConfirmed = true,
+                    LockoutEnabled = false
+                },
+                new IdentityUser(supportEmail)
+                {
+                    Email = supportEmail,
+                    EmailConfirmed = true,
+                    LockoutEnabled = false
+                }
+            };
+
+            foreach (var identityUser in defaultUsers)
+            {
+                identityUser.PasswordHash = HashPassword(identityUser, defaultPassword);
+                modelBuilder.Entity<IdentityUser>().HasData(identityUser);
+            }
+
+            modelBuilder.Entity<IdentityUserRole<string>>().HasData(new List<IdentityUserRole<string>>
+            {
+                new IdentityUserRole<string>
+                {
+                    UserId = defaultUsers.FirstOrDefault(x => x.UserName == userEmail)?.Id,
+                    RoleId = defaultRoles.FirstOrDefault(x => x.Name == "User")?.Id
+                },
+                new IdentityUserRole<string>
+                {
+                    UserId = defaultUsers.FirstOrDefault(x => x.UserName == adminEmail)?.Id,
+                    RoleId = defaultRoles.FirstOrDefault(x => x.Name == "Admin")?.Id
+                },
+                new IdentityUserRole<string>
+                {
+                    UserId = defaultUsers.FirstOrDefault(x => x.UserName == supportEmail)?.Id,
+                    RoleId = defaultRoles.FirstOrDefault(x => x.Name == "Support")?.Id
+                }
+            });
+        }
+
+        private string HashPassword<T>(T user, string password) where T : IdentityUser
+        {
+            var hasher = new PasswordHasher<T>();
+            return hasher.HashPassword(user, password);
         }
     }
 }
