@@ -87,18 +87,24 @@ namespace Covid.DSS.Data
                 new IdentityUser(userEmail)
                 {
                     Email = userEmail,
+                    NormalizedEmail = userEmail.ToUpperInvariant(),
+                    NormalizedUserName = userEmail.ToUpperInvariant(),
                     EmailConfirmed = true,
                     LockoutEnabled = false
                 },
                 new IdentityUser(adminEmail)
                 {
                     Email = adminEmail,
+                    NormalizedEmail = adminEmail.ToUpperInvariant(),
+                    NormalizedUserName = adminEmail.ToUpperInvariant(),
                     EmailConfirmed = true,
                     LockoutEnabled = false
                 },
                 new IdentityUser(supportEmail)
                 {
                     Email = supportEmail,
+                    NormalizedEmail = supportEmail.ToUpperInvariant(),
+                    NormalizedUserName = supportEmail.ToUpperInvariant(),
                     EmailConfirmed = true,
                     LockoutEnabled = false
                 }
