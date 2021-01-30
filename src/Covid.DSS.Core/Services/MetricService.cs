@@ -52,7 +52,7 @@ namespace Covid.DSS.Core.Services
 
             var setup = await GetTemplateSetup(templateId);
 
-            var parsedMetrics = _excelReaderService.ParseFile(file, templateId, setup);
+            var parsedMetrics = _excelReaderService.ParseFile(file, setup);
             var decoratedMetrics = await DecorateMetrics(metricRequestCreateRequest.Id, parsedMetrics);
 
             foreach (var decoratedMetric in decoratedMetrics)

@@ -9,6 +9,6 @@ namespace Covid.DSS.Core.Services.Interfaces
 {
     public interface IExcelReaderService
     {
-        IEnumerable<HospitalMetric> ParseFile(byte[] file, int templateId, HospitalTemplateSetup setup);
+        IEnumerable<HospitalMetric> ParseFile(byte[] file, HospitalTemplateSetup setup);
     }
 }

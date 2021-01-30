@@ -10,7 +10,6 @@ using Covid.DSS.Common.Models;
 using Covid.DSS.Common.Models.DTO;
 using Covid.DSS.Core.Services.Interfaces;
 using OfficeOpenXml;
-using ValueType = Covid.DSS.Common.Models.ValueType;
 
 namespace Covid.DSS.Core.Services
 {
@@ -19,21 +18,32 @@ namespace Covid.DSS.Core.Services
         private ExcelWorksheet _sheet;
         private HospitalTemplateSetup _setup;
 
-        private readonly string[] _excludedMetrics = {"EFFECTIVEDATE", "UNITID"};
+        private const string _documentSignature = "AAABBBCCC"; //TODO: Retrieve from app settings
 
-        public IEnumerable<HospitalMetric> ParseFile(byte[] file, int templateId, HospitalTemplateSetup setup)
+        private const string _effectiveDateCode = "EFFECTIVEDATE";
+        private const string _unitIdCode = "UNITID";
+        private const string _signatureCode = "DOCSIGNATURE";
+
+        private readonly string[] _excludedMetrics = { _effectiveDateCode, _unitIdCode, _signatureCode };
+
+        protected readonly string Culture = "el-GR";
+
+        /// <summary>
+        /// Parses a excel file given a set of setup instructions into a collection
+        /// of <see cref="HospitalMetric"/>s
+        /// </summary>
+        /// <param name="file">The file to parse</param>
+        /// <param name="setup">The setup instructions</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="HospitalMetric"/></returns>
+        public IEnumerable<HospitalMetric> ParseFile(byte[] file, HospitalTemplateSetup setup)
         {
             _setup = setup;
 
-            // read excel
+            // Read excel
             var package = CreatePackageFromFile(file);
             _sheet = GetWorksheet(package);
-
-            var startingRow = _setup.HeaderRows + 1;
-
-            //TODO: validate file KEY
-
-            // iterate through metric setups and read cells
+            
+            // Iterate through metric setups and read cells
             var metricValuesList = new Dictionary<string, IEnumerable<string>>();
             var metrics = new List<HospitalMetric>();
 
@@ -43,8 +53,13 @@ namespace Covid.DSS.Core.Services
                 metricValuesList.Add(metricSetup.MetricType.Code, metricValues);
             }
 
-            DateTime.TryParse(metricValuesList["EFFECTIVEDATE"].FirstOrDefault(), new CultureInfo("el-GR"), DateTimeStyles.None, out var effectiveDate);
-            var unitIdList = metricValuesList["UNITID"].ToList();
+            DateTime.TryParse(metricValuesList[_effectiveDateCode].FirstOrDefault(), new CultureInfo(Culture),
+                DateTimeStyles.None, out var effectiveDate);
+            var unitIdList = metricValuesList[_unitIdCode].ToList();
+            var signature = metricValuesList[_signatureCode].FirstOrDefault();
+
+            if (!IsSignatureValid(signature))
+                return null;
 
             foreach (var list in metricValuesList)
             {
@@ -112,6 +127,11 @@ namespace Covid.DSS.Core.Services
                 : package.Workbook.Worksheets.FirstOrDefault(x => x.Name == name);
         }
 
+        /// <summary>
+        /// Extracts cell values from <see cref="ExcelWorksheet"/> based on setup instructions
+        /// </summary>
+        /// <param name="metricSetup">The setup instruction object</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="string"/></returns>
         private IEnumerable<string> ProcessMetricSetup(HospitalTemplateMetricSetup metricSetup)
         {
             if (_sheet == null)
@@ -119,15 +139,40 @@ namespace Covid.DSS.Core.Services
 
             var result = new List<string>();
 
-            var cells = _sheet.Cells[metricSetup.Source];
-
-            foreach (var cell in cells)
+            switch (metricSetup.SourceType)
             {
-                var value = cell.GetValue<string>();
-                result.Add(value);
+                case DataTemplateMetricSourceType.Column:
+                    break; //TODO: Review for removal of Column type
+                case DataTemplateMetricSourceType.Cell:
+                    result.Add(_sheet.Cells[metricSetup.Source].GetValue<string>());
+                    break;
+                case DataTemplateMetricSourceType.Range:
+                    result.AddRange(ExtractValues(_sheet.Cells[metricSetup.Source]));
+                    break;
+                case DataTemplateMetricSourceType.Field:
+                    result.AddRange(ExtractValues(_sheet.Workbook.Names[metricSetup.Source]));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             return result;
         }
+
+        /// <summary>
+        /// Extracts the cell values of an <see cref="ExcelRangeBase"/> to a
+        /// collection of strings
+        /// </summary>
+        /// <param name="range">The range to extract cell values from</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="string"/></returns>
+        private IEnumerable<string> ExtractValues(ExcelRangeBase range)
+            => range.Select(cell => cell.GetValue<string>()).ToList();
+
+        /// <summary>
+        /// Checks whether the claimed signature string matches the accepted signature
+        /// </summary>
+        /// <param name="claimedSignature">The signature to verify</param>
+        private static bool IsSignatureValid(string claimedSignature)
+            => claimedSignature == _documentSignature;
     }
 }
